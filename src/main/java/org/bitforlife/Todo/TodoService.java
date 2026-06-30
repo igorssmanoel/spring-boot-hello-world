@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -28,13 +29,17 @@ public class TodoService {
     }
 
     public Todo update(int id, Todo todo) throws Exception {
-        if (!this.repository.existsById((int) id)) {
-            throw new ResourceNotFoundException("Deu muito ruim pq nao encontrou o carinha no id");
+        Optional<Todo> existingTodo = this.repository.findById(id);
+        if (existingTodo.isPresent()) {
+            Todo _todo = existingTodo.get();
+            _todo.setTitle(todo.getTitle());
+            _todo.setCompleted(todo.isCompleted());
+
+            return this.repository.save(_todo);
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        todo.setUpdatedAt(now);
-        return this.repository.save(todo);
+        return null;
+
     }
 
     public boolean deleteById(int id) {

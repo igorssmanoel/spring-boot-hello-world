@@ -24,13 +24,14 @@ public class StudentService {
     }
 
     public Student update(Integer id, Student student) throws BadRequestException {
-        //Verificar se existe alguem com esse id no banco de dados
+        Optional<Student> optionalStudent = this.repository.findById(id);
+        Student _student = optionalStudent.orElseThrow(() -> new BadRequestException("O estudante nao existe"));
 
-        if (this.repository.existsById(id)) {
-            return this.repository.save(student);
-        }
+        _student.setName(student.getName());
+        _student.setAge(student.getAge());
+        _student.setEmail(student.getEmail());
 
-        throw new BadRequestException("O estudante nao existe");
+        return this.repository.save(_student);
     }
 
 
